@@ -1,13 +1,14 @@
 /**
- * Builds the published site into the repository root, because Pages serves
- * this repo with "Deploy from a branch: main / (root)". The generated files
- * are committed, so what is served is exactly what is in git.
+ * Builds dist/: the TypeScript sources bundled to one browser module, the
+ * Tailwind stylesheet compiled to a static file, and the static assets from
+ * public/. Nothing third-party is fetched at runtime except the web fonts.
  *
- * Generated, do not edit by hand: index.html, app.js, styles.css, icon.svg,
- * .nojekyll. Sources live in src/ and public/.
+ * dist/ is not committed. The Pages workflow builds it and uploads it as the
+ * deployment artifact, which Pages serves verbatim — Jekyll never runs, so no
+ * .nojekyll is needed.
  */
 
-const GENERATED = ["app.js", "styles.css", "index.html", "icon.svg", ".nojekyll"];
+const OUT = "dist";
 
 async function run(what: string, args: string[]) {
   const command = new Deno.Command(Deno.execPath(), { args, stdout: "inherit", stderr: "inherit" });
@@ -18,10 +19,8 @@ async function run(what: string, args: string[]) {
   }
 }
 
-// Never a recursive delete here: the output directory is the repository root.
-for (const file of GENERATED) {
-  await Deno.remove(file).catch(() => {});
-}
+await Deno.remove(OUT, { recursive: true }).catch(() => {});
+await Deno.mkdir(OUT, { recursive: true });
 
 await run("bundle", [
   "bundle",
@@ -30,7 +29,7 @@ await run("bundle", [
   "--minify",
   "--allow-import",
   "--output",
-  "app.js",
+  `${OUT}/app.js`,
   "src/main.tsx",
 ]);
 
@@ -47,19 +46,15 @@ await run("tailwind", [
   "--input",
   "src/styles.css",
   "--output",
-  "styles.css",
+  `${OUT}/styles.css`,
   "--minify",
 ]);
 
 for await (const entry of Deno.readDir("public")) {
-  if (entry.isFile) await Deno.copyFile(`public/${entry.name}`, entry.name);
+  if (entry.isFile) await Deno.copyFile(`public/${entry.name}`, `${OUT}/${entry.name}`);
 }
 
-// Without this, Pages runs the branch through Jekyll, which ignores files and
-// folders beginning with an underscore and rewrites what it does serve.
-await Deno.writeTextFile(".nojekyll", "");
-
 for (const file of ["app.js", "styles.css"]) {
-  const { size } = await Deno.stat(file);
-  console.log(`  ${file}  ${(size / 1024).toFixed(1)} kB`);
+  const { size } = await Deno.stat(`${OUT}/${file}`);
+  console.log(`  ${OUT}/${file}  ${(size / 1024).toFixed(1)} kB`);
 }

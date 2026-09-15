@@ -70,15 +70,17 @@ deno task serve    # serve dist/ locally
 ```
 
 `deno bundle` compiles `src/main.tsx` and its dependencies, Preact included, into
-a single `app.js`. Tailwind compiles to a static `styles.css` in the same step.
+a single `dist/app.js`. Tailwind compiles to a static `dist/styles.css` in the
+same step.
 
-Pages serves this repository with **Deploy from a branch: main / (root)**, so
-the built site is committed at the root and `.nojekyll` keeps Pages from running
-it through Jekyll. Rebuild and commit whenever you change anything under `src/`
-or `public/` — CI fails if the committed output does not match the sources.
+Pushing to `main` builds and deploys via
+[.github/workflows/deploy.yml](.github/workflows/deploy.yml). Pull requests run
+the same checks without deploying. `dist/` is not committed; Pages serves the
+uploaded artifact verbatim, so Jekyll never runs.
 
-Generated, do not edit by hand: `index.html`, `app.js`, `styles.css`,
-`icon.svg`, `.nojekyll`.
+This needs Settings → Pages → Source set to **GitHub Actions**. The workflow
+cannot set it: creating a Pages site needs repository admin, while the workflow
+token's `pages: write` only covers deploying to a site that already exists.
 
 ## Layout
 
