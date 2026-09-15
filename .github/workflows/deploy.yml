@@ -34,11 +34,10 @@ jobs:
       - name: Build
         run: deno run -A scripts/build.ts
 
-      # enablement turns Pages on and points it at Actions the first time this
-      # runs, so the repository needs no manual setup.
+      # Pages must already be enabled with Source = GitHub Actions. The
+      # workflow token cannot create the Pages site itself: that needs repo
+      # admin, and GITHUB_TOKEN's pages: write only covers deploying to it.
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:

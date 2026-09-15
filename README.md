@@ -74,8 +74,12 @@ a single `dist/app.js`. Tailwind is compiled to a static `dist/styles.css` in th
 same step. Pushing to `main` builds and deploys via
 [.github/workflows/deploy.yml](.github/workflows/deploy.yml).
 
-The workflow enables Pages and points it at Actions itself on first run, so the
-repository needs no manual setup.
+**One-time setup:** in Settings → Pages → Build and deployment, set Source to
+**GitHub Actions** (not "Deploy from a branch"). The workflow cannot do this for
+you — creating a Pages site needs repository admin rights, while the workflow
+token's `pages: write` only covers deploying to a site that already exists.
+Until it is set, the build succeeds and `configure-pages` fails with
+`Get Pages site failed ... Not Found`.
 
 ## Layout
 
