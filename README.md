@@ -74,8 +74,8 @@ a single `dist/app.js`. Tailwind is compiled to a static `dist/styles.css` in th
 same step. Pushing to `main` builds and deploys via
 [.github/workflows/deploy.yml](.github/workflows/deploy.yml).
 
-The repository's Pages source must be set to **GitHub Actions**
-(Settings → Pages → Build and deployment → Source), not "Deploy from a branch".
+The workflow enables Pages and points it at Actions itself on first run, so the
+repository needs no manual setup.
 
 ## Layout
 
