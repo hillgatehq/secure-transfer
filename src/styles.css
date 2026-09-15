@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+    /* Receiving is the default ink; the sending flow swaps it. */
+    --accent: #1f5d4c;
+  }
+
+  body {
+    @apply bg-paper font-sans text-[15px] text-ink antialiased;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  ::selection {
+    @apply bg-intaglio text-paper;
+  }
+
+  pre {
+    margin: 0;
+  }
+}
+
+@layer components {
+  /* Set as classes rather than style attributes so the page needs no inline
+     styles, which keeps style-src free of 'unsafe-inline'. */
+  .ink-receive {
+    --accent: #1f5d4c;
+  }
+
+  .ink-send {
+    --accent: #7a2e3b;
+  }
+
+  .noscript {
+    @apply mx-auto my-16 max-w-[60ch] px-5 leading-relaxed;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
